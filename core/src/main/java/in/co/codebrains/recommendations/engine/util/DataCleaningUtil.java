@@ -68,7 +68,7 @@ public class DataCleaningUtil {
 
                 Property property = eachNode.getProperty(propertyName);
                 // If author has configured any property as Tag then using tagManager Tag Name is added to Bag of words
-                if (StringUtils.equals(propertyType, "Tag")) {
+                if (StringUtils.equalsIgnoreCase(propertyType, "Tag")) {
                     // Checking if property is an array or single valued and reading those as array
                     Value[] tagsIds = (property.isMultiple()) ? property.getValues() : new Value[]{property.getValue()};
                     // Converting Tag IDs into Tag Names
@@ -81,7 +81,9 @@ public class DataCleaningUtil {
                     Value[] propertyValues = (property.isMultiple()) ? property.getValues() : new Value[]{property.getValue()};
                     // Adding the non-tag property to the bag of words
                     for (Value eachProperty : propertyValues) {
-                        bagOfWordsBuilder.append(StringUtils.SPACE).append(eachProperty.getString());
+                        // Removing empty spaces, special characters & converting text to lower case
+                        bagOfWordsBuilder.append(StringUtils.SPACE).append(eachProperty.getString().
+                                replaceAll("[^a-zA-Z0-9]", "").toLowerCase());
                     }
                 }
             }
@@ -111,7 +113,8 @@ public class DataCleaningUtil {
             Tag tag = tagManager.resolve(tagId.getString());
 
             if (tag != null) {
-                tagNames.add(tag.getName());
+                // Removing empty spaces & converting text to lower case
+                tagNames.add(tag.getTitle().replaceAll("[^a-zA-Z0-9]", "").toLowerCase());
             }
         }
         return tagNames;

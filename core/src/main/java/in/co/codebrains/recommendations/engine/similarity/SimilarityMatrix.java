@@ -5,6 +5,10 @@ import org.apache.commons.math3.linear.RealMatrix;
 import java.io.Serializable;
 import java.util.LinkedHashMap;
 
+/**
+ * Model class which contains the DotProductMatrix & NodeIdIndexMap.
+ * Recommendations are generated in the form of SimilarityMatrix and is later used while reading the recommendations.
+ */
 public class SimilarityMatrix  implements Serializable {
 
     private RealMatrix dotProductMatrix;

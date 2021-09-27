@@ -25,6 +25,11 @@ public class GlobalUtil {
     public static final String SIMILARITY_MARTIX_UPDATED = "similarity-matrix-update-status";
 
     /**
+     * Name of the property storing Recommendation Engine Name
+     */
+    public static final String ENGINE_NAME_PROPERTY = "recommendation-engine-name";
+
+    /**
      * Utility method which generates the path for Similarity Matrix serialized objects
      * @param recommendationEngineName - Name of the recommendation engine for generating the path without special characters
      * @return

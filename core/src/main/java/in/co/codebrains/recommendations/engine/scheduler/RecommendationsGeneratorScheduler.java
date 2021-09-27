@@ -28,6 +28,7 @@ import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 import java.io.*;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -59,7 +60,7 @@ public class RecommendationsGeneratorScheduler implements Runnable {
         ScheduleOptions scheduleOptions = scheduler.EXPR(aemRecommenderConfig.schedulerExpression());
         scheduleOptions.name(aemRecommenderConfig.recommendationEngineName());
         /* Scheduling RecommendationsGeneratorScheduler Job to generate Recommendations and serializes & stores the
-           dotProductMatix in JCR. Only in auhoring instance */
+           dotProductMatix in JCR. Only in authoring instance */
         if(this.settingsService.getRunModes().contains("author")) {
             scheduler.schedule(this, scheduleOptions);
         }
@@ -141,8 +142,11 @@ public class RecommendationsGeneratorScheduler implements Runnable {
                                                 final Session session) {
         try {
             String similartityMatrixStoragePath = GlobalUtil.generateSimilarityMatrixStoragePath(recommmenderName);
+            // Creating Map for storing Recommendation Engine Name as Node properties on Store Root node.
+            Map<String, Object> properties = new HashMap<>();
+            properties.put(GlobalUtil.ENGINE_NAME_PROPERTY, recommmenderName);
             // Getting or Creating if not present the root node for storing serialized dotProductMatrix & NodeIdIndexMap
-            Resource storeRoot = ResourceUtil.getOrCreateResource(resourceResolver, similartityMatrixStoragePath, "",
+            Resource storeRoot = ResourceUtil.getOrCreateResource(resourceResolver, similartityMatrixStoragePath, properties,
                     null, true);
 
             Node storeRootNode = storeRoot.adaptTo(Node.class);

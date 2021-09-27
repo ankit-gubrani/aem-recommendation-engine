@@ -1,0 +1,21 @@
+<div data-sly-test="${wcmmode.edit}" data-emptytext="AEM Recommendation Engine Demo" class="cq-placeholder"></div>
+<sly data-sly-use.recommendations="in.co.codebrains.recommendations.engine.models.RecommendationsComponentModel"/>
+<div class="we-product-grid-container">
+    <ul class="recommendations-content foundation-ordered-list-container products-grid" style="display: block;">
+        <sly data-sly-list.topRecommendations="${recommendations.recommendations}">
+            <li class="foundation-list-item">
+                <div class="we-ProductsGrid-item">
+
+                    <div class="we-ProductsGrid-item-image img-center">
+                        <img src="${topRecommendations.thumbnail}" alt="Trail Model Pants">
+                    </div>
+
+                    <h3 class="we-ProductsGrid-item-title h4">${topRecommendations.title}</h3>
+
+                    <span class="we-ProductsGrid-item-discount hidden"><span></span>off</span>
+                    <a href="${topRecommendations.path}.html" class="we-ProductsGrid-item-link"></a>
+                </div>
+            </li>
+        </sly>
+    </ul>
+</div>

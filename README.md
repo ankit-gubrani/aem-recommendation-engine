@@ -4,15 +4,19 @@ Recommendation Engine which generates the content based recommendations in AEM.
 It performs the consine similarity on features extracted from data collected from JCR based on properties provided as 
 configuration.
 
-## Modules
+## Configuring Recommendation Engine
 
-The main parts of the template are:
+* Add a new osgi configuration for factory config named "**AEM Recommendation Engine Configuration Factory**" with following properties for each Recommendation Engine:
+    * **Recommendation Engine Name** : Name used for storing the DotProductMatrix & NodeIdIndex Map in JCR. Recommendation Engine Name is used for reading the stored recommendation engine from JCR
+    * **Scheduler Expression** : Scheduler Expression for running the RecommendationEngine Generator on regular cadence to generate the recommendations based on newly added data
+    * **Data Extraction Query** : JCR 2 query for extracting the data from within JCR, query should search for nodes having properties to be used for features extraction
+    * **Properties** : Name of the properties which are used for feature extraction for generating recommendations. 
+ 
+![Configuring Recommendation Engine](https://raw.github.com/ankit-gubrani/aem-recommendation-engine/master/screenshots/ConfiguringRecommendationEngine.png "Configuring Recommendation Engine")
 
-* core: Java bundle containing all core functionality like OSGi services, listeners or schedulers, as well as component-related Java code such as servlets or request filters.
-* ui.apps: contains the /apps (and /etc) parts of the project, ie JS&CSS clientlibs, components, templates, runmode specific configs as well as Hobbes-tests
-* ui.content: contains sample content using the components from the ui.apps
-* ui.tests: Java bundle containing JUnit tests that are executed server-side. This bundle is not to be deployed onto production.
-* ui.launcher: contains glue code that deploys the ui.tests bundle (and dependent bundles) to the server and triggers the remote JUnit execution
+## Reading/Consuming Recommendations in a Sling Model 
+
+![Reading Recommendations](https://raw.github.com/ankit-gubrani/aem-recommendation-engine/master/screenshots/ReadingRecommendationsInSlingModel.png "Reading Recommendations")
 
 ## How to build
 

@@ -1,6 +1,8 @@
 package in.co.codebrains.recommendations.engine.service.impl;
 
 import com.day.cq.commons.jcr.JcrConstants;
+import com.day.cq.wcm.api.Page;
+import com.day.cq.wcm.api.PageManager;
 import in.co.codebrains.recommendations.engine.config.RecommendationsReaderServiceConfig;
 import in.co.codebrains.recommendations.engine.exceptions.RecommendationEngineNotFoundException;
 import in.co.codebrains.recommendations.engine.exceptions.SerializedObjectsNotFound;
@@ -45,7 +47,47 @@ public class RecommendationsReaderServiceImpl implements RecommendationsReaderSe
     }
 
     @Override
-    public List<String> getTopRecommendations(String recommendationEngineName, int topNResults, String nodePath) throws RecommendationEngineNotFoundException, SerializedObjectsNotFound {
+    public List<Resource> getTopRecommendationsAsResouce(final String recommendationEngineName, final int topNResults,
+                                                         final String nodePath, final ResourceResolver resourceResolver) throws RecommendationEngineNotFoundException, SerializedObjectsNotFound {
+        List<Resource> topRecommendationsResources = new ArrayList<>();
+        // Requesting the Recommendations for NodePath Passed
+        List<String> topNRecommendations = getTopRecommendations(recommendationEngineName, topNResults, nodePath);
+        // Requesting the Recommendations for NodePath Passed
+        if (resourceResolver != null) {
+            for (String eachRecommendation : topNRecommendations) {
+                Resource eachRecommendationResource = resourceResolver.getResource(eachRecommendation);
+                if (eachRecommendationResource != null)
+                    topRecommendationsResources.add(eachRecommendationResource);
+            }
+        }
+
+        return topRecommendationsResources;
+    }
+
+    @Override
+    public List<Page> getTopRecommendationsAsPage(final String recommendationEngineName, final int topNResults,
+                                                  final String nodePath, final ResourceResolver resourceResolver) throws RecommendationEngineNotFoundException, SerializedObjectsNotFound {
+        List<Page> recommendationPages = new ArrayList<>();
+        // Requesting the Recommendations for NodePath Passed
+        List<String> topNRecommendations = getTopRecommendations(recommendationEngineName, topNResults, nodePath);
+
+        if (resourceResolver != null) {
+            PageManager pageManager = resourceResolver.adaptTo(PageManager.class);
+            for (String eachRecommendation : topNRecommendations) {
+                Resource eachRecommendationResource = resourceResolver.getResource(eachRecommendation);
+                if (eachRecommendationResource != null) {
+                    Page recommendationPage = pageManager.getContainingPage(eachRecommendationResource);
+                    recommendationPages.add(recommendationPage);
+                }
+            }
+        }
+
+        return recommendationPages;
+    }
+
+    @Override
+    public List<String> getTopRecommendations(final String recommendationEngineName, final int topNResults,
+                                              final String nodePath) throws RecommendationEngineNotFoundException, SerializedObjectsNotFound {
         try (ResourceResolver resourceResolver = recommendationUtilService.getResourceResolver()) {
             if (readSimilarityMatrixFromMemory) {
                 SimilarityMatrix similarityMatrix = readSimilarityMatrix(recommendationEngineName, resourceResolver);
@@ -101,7 +143,7 @@ public class RecommendationsReaderServiceImpl implements RecommendationsReaderSe
             // This is to ensure OpenIntToDoubleHashMap is present in class loader and does not cause any issues while deserializing
             OpenIntToDoubleHashMap openIntToDoubleHashMap = new OpenIntToDoubleHashMap();
             // Decoding DotProductMatrix as Byte array
-            byte [] deocdedDotProductMatrixData = Base64.getDecoder().decode(IOUtils.toByteArray(dotProductMatrixContentNode.getProperty(JcrConstants.JCR_DATA).getBinary().getStream()));
+            byte[] deocdedDotProductMatrixData = Base64.getDecoder().decode(IOUtils.toByteArray(dotProductMatrixContentNode.getProperty(JcrConstants.JCR_DATA).getBinary().getStream()));
             ObjectInputStream dotProductMatrixOIS = new ObjectInputStream(new ByteArrayInputStream(deocdedDotProductMatrixData));
             RealMatrix dotProductMatrix = (RealMatrix) dotProductMatrixOIS.readObject();
             dotProductMatrixOIS.close();
@@ -110,7 +152,7 @@ public class RecommendationsReaderServiceImpl implements RecommendationsReaderSe
             Resource nodeIdIndexMapContent = nodeIdIndexMapResource.getChild(JcrConstants.JCR_CONTENT);
             Node nodeIdIndexMapContentNode = nodeIdIndexMapContent.adaptTo(Node.class);
             // De-Serializing NodeIdIndexMap object
-            byte [] deocdedNodeIdIndexMapData = Base64.getDecoder().decode(IOUtils.toByteArray(nodeIdIndexMapContentNode.getProperty(JcrConstants.JCR_DATA).getBinary().getStream()));
+            byte[] deocdedNodeIdIndexMapData = Base64.getDecoder().decode(IOUtils.toByteArray(nodeIdIndexMapContentNode.getProperty(JcrConstants.JCR_DATA).getBinary().getStream()));
             ObjectInputStream nodeIdIndexMapOIS = new ObjectInputStream(new ByteArrayInputStream(deocdedNodeIdIndexMapData));
             LinkedHashMap<String, Integer> nodeIdIndexMap = (LinkedHashMap) nodeIdIndexMapOIS.readObject();
             nodeIdIndexMapOIS.close();
@@ -172,7 +214,7 @@ public class RecommendationsReaderServiceImpl implements RecommendationsReaderSe
             index. */
         List<Map.Entry<String, Integer>> nodeIndexToNodeId = new ArrayList<Map.Entry<String, Integer>>(nodeIdIndexMap.entrySet());
         // MaxHeap for getting sorting the double array storing the cosine similarity
-        PriorityQueue<Pair<Double, String>>  maxHeap = new PriorityQueue<>(Comparator.comparing(Pair::getKey, Comparator.naturalOrder()));
+        PriorityQueue<Pair<Double, String>> maxHeap = new PriorityQueue<>(Comparator.comparing(Pair::getKey, Comparator.naturalOrder()));
         // Getting the Index for NodeId to read the Similarity Array from DotProductMatrix
         int nodeIdIndex = nodeIdIndexMap.getOrDefault(nodeId, -1);
         // Node Id does not exists in the nodeIdIndexMap hence returning null
@@ -193,10 +235,12 @@ public class RecommendationsReaderServiceImpl implements RecommendationsReaderSe
             }
         }
 
-        while(!maxHeap.isEmpty()) {
+        while (!maxHeap.isEmpty()) {
             Pair<Double, String> eachRecommendation = maxHeap.poll();
             topRecommendations.add(GlobalUtil.generateNodePath(eachRecommendation.getSecond()));
         }
+        // Reversing the list of Top Recommendations as most Similar Recommendation is at the bottom as it was added the first.
+        Collections.reverse(topRecommendations);
 
         return topRecommendations;
     }

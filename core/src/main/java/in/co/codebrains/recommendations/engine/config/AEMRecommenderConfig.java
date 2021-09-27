@@ -3,7 +3,7 @@ package in.co.codebrains.recommendations.engine.config;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
-@ObjectClassDefinition(name = "AEM Recommendation Engine : Configuration")
+@ObjectClassDefinition(name = "AEM Recommendation Engine Configuration Factory")
 public @interface AEMRecommenderConfig {
 
     @AttributeDefinition(name = "Recommendation Engine Name", description = "Name of the Recommendation Engine which will be used while reading the cached/stored recommendation map.")

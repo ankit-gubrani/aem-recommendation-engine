@@ -41,13 +41,13 @@ public class SimilarityMatrixGenerator {
         // Initializing CountVectorizer object
         CountVectorizer vectorizer = new CountVectorizer(dictionary, tokenizer);
         // getting Matrix storing SparseVector for each Node/Data Element
-        RealMatrix matrix = vectorizer.getCountMatrix(bagOfWordsMap.values());
-        RealMatrix dotProductMatrix = new OpenMapRealMatrix(matrix.getRowDimension(), matrix.getRowDimension());
+        RealMatrix countMatrix = vectorizer.getCountMatrix(bagOfWordsMap.values());
+        RealMatrix dotProductMatrix = new OpenMapRealMatrix(countMatrix.getRowDimension(), countMatrix.getRowDimension());
 
-        for (int row = 0; row < matrix.getRowDimension(); row++) {
-            RealVector node1Vector = matrix.getRowVector(row);
-            for (int col = 0; col < matrix.getRowDimension(); col++) {
-                RealVector node2Vector = matrix.getRowVector(col);
+        for (int row = 0; row < countMatrix.getRowDimension(); row++) {
+            RealVector node1Vector = countMatrix.getRowVector(row);
+            for (int col = 0; col < countMatrix.getRowDimension(); col++) {
+                RealVector node2Vector = countMatrix.getRowVector(col);
 
                 double cosine = 0.0D;
 

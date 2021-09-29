@@ -4,6 +4,11 @@ Recommendation Engine which generates the content based recommendations in AEM.
 It performs the consine similarity on features extracted from data collected from JCR based on properties provided as 
 configuration.
 
+## Further Details
+Further details can be found here: [a AEM Recommendation Generator](https://www.codebrains.co.in/recommendation-engine)  
+
+Follow this link to go over the [a overall approach](https://www.codebrains.co.in/recommendation-engine) used for implementing AEM Recommendation Generator.
+
 ## Configuring Recommendation Engine
 
 * Add a new osgi configuration for factory config named "**AEM Recommendation Engine Configuration Factory**" with following properties for each Recommendation Engine:

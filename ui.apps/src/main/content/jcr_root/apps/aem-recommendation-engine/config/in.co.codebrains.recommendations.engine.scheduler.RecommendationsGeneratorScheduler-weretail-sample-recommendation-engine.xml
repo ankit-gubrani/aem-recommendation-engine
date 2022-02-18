@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+    xmlns:jcr="http://www.jcp.org/jcr/1.0" jcr:primaryType="sling:OsgiConfig"
+    recommendationEngineName="We_Retail_Produts_Sample_Engine"
+    schedulerExpression="0 0 /1 * * ?"
+    dataExtractionQuery="SELECT * FROM [nt:unstructured] AS s WHERE ISDESCENDANTNODE([/content/we-retail/us/en/products]) and s.[jcr:primaryType] = 'cq:PageContent' and s.[cq:tags] IS NOT NULL and s.[cq:productMaster] IS NOT NULL"
+    properties="[cq:tags=Tag]" />

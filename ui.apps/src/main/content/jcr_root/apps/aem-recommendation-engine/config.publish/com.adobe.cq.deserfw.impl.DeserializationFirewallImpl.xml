@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+          jcr:primaryType="sling:OsgiConfig"
+          firewall.deserialization.whitelist="[[,com.adobe.,com.day.,com.google.api.client.auth.oauth2.,com.scene7.,java.,javax.,oracle.sql.,org.apache.http.auth,org.apache.http.impl.auth,org.apache.jackrabbit.,org.apache.sling.,org.apache.commons.math3.linear.OpenMapRealMatrix,org.apache.commons.math3.util.OpenIntToDoubleHashMap]"/>
